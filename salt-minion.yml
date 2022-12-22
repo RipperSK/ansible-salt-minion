@@ -1,0 +1,20 @@
+---
+- name: add salt minion
+  hosts: all
+  become: yes
+  vars:
+    - mastervar: "master: spiak.sk"
+
+  tasks:
+    - name: install salt-minion package
+      package:
+        name: salt-minion
+        state: latest
+    - name: create minion_id
+      shell: hostname -f > /etc/salt/minion_id
+    - name: create minion.d/master
+      shell: echo "{ mastervar }" > /etc/salt/minion.d/master.conf
+    - name: enable salt-minion
+      service: name=salt-minion.service enabled=yes
+    - name: restart salt-minion
+      service: name=salt-minion.service state=restarted
